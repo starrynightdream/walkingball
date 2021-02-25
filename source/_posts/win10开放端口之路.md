@@ -4,7 +4,7 @@ date: 2021-02-25 15:22:06
 tags:
 - 技术
     - 环境配置
-thumbnail: /walkingball/images/
+thumbnail: /walkingball/images/7ce415d1bbc5bfa12f9c903c476a6120c71c3a16_raw.jpg
 ---
 # win10开放端口
 因为自己开发的需要开放了端口。在之前的Linux中端口开放和访问一直很没什么问题。
@@ -47,3 +47,5 @@ A: 你可以使用telnet命令。
 1. 设置->更新与安全->开发者选项->开发人员模式
 2. 设置->应用->应用和功能->可选功能->添加功能->简单网路管理协议(SNMP)
 3. 重启查看SNMP是否运行
+
+此时你再使用telnet应当可以进入一个空面板而非提示端口错误了。
