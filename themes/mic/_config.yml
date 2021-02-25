@@ -4,7 +4,7 @@
 
 # Head info
 head:
-    favicon: "/img/logo_miccall.png"
+    favicon: "img/logo_miccall.png"
     keywords: miccall
     backgroundpic : "img/bg.jpg"
 
@@ -39,9 +39,9 @@ Nav:
         #   link：“路径”
 
 MainFirst:
-    name: Miccall Metro
-    description: Technical  Artist  of  Games   
-    pic_url: /images/me.jpg
+    name: 这里可能需要一个名称
+    description: 但天知道这里应该这么介绍。。。 
+    pic_url: images/me.jpg
     goto_ulr: ""
 
 Gallery :
