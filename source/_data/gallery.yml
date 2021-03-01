@@ -1,0 +1,14 @@
+first:
+ full_link: /walkingball/images/first.jpg
+ thumb_link: /walkingball/images/first.jpg
+ desrc: "在本站中最先出现的一张图片"
+
+Hello:
+  full_link: /walkingball/images/mmexport1588750040021.jpg
+  thumb_link: /walkingball/images/mmexport1588750040021.jpg
+  desrc: "建站技术文"
+
+pict001_win10:
+  full_link: /walkingball/images/7ce415d1bbc5bfa12f9c903c476a6120c71c3a16_raw.jpg
+  thumb_link: /walkingball/images/7ce415d1bbc5bfa12f9c903c476a6120c71c3a16_raw.jpg
+  desrc: "win10技术文章"

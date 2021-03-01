@@ -31,8 +31,8 @@ Nav:
         #     link: "/about/"
         # 团队 :
         #     link: "/group/"
-        # 图库 :
-        #     link: "/gallery/"
+        图库 :
+            link: "/walkingball/gallery/"
         # 标签:
         #     link: "/tag/"
         #自定义标签名
@@ -45,8 +45,8 @@ MainFirst:
     goto_ulr: ""
 
 Gallery :
-    title: Mr.metro 
-    description: Just another fine responsive 
+    title: hello lovely world
+    description: 世间有如此多的可爱 
 
 # ---------------------------------------------------------------
 # Style Settings
