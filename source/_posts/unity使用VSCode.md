@@ -8,6 +8,7 @@ tags:
 thumbnail: /walkingball/images/65265727_p0.png
 ---
 # 有官方的步骤
+[官方的文档在这](https://code.visualstudio.com/docs/other/unity)
 这里的环境是： win10 + unity2019，但估计差别不大。
 
 首先是设置unity
