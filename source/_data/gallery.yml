@@ -12,3 +12,8 @@ pict001_win10:
   full_link: /walkingball/images/7ce415d1bbc5bfa12f9c903c476a6120c71c3a16_raw.jpg
   thumb_link: /walkingball/images/7ce415d1bbc5bfa12f9c903c476a6120c71c3a16_raw.jpg
   desrc: "win10技术文章"
+
+pict002_unity_vsc:
+ full_link: /walkingball/images/65265727_p0.png
+ thumb_link: /walkingball/images/65265727_p0.png
+ desrc: "unity使用vsc"
