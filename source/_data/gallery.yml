@@ -22,3 +22,8 @@ pict003_raspberry_enter:
  full_link: /walkingball/images/79620304_p0.jpg
  thumb_link: /walkingball/images/79620304_p0.jpg
  desrc: "树莓派的入门哦"
+
+pict004_c++_func:
+  full_link: /walkingball/images/1a9356aae46c04_1_post.jpg
+  thumb_link: /walkingball/images/1a9356aae46c04_1_post.jpg
+  desrc: "c++的函数笔记"
