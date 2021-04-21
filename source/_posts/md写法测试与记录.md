@@ -43,3 +43,11 @@ $ \frac{du}{dt} and \frac{d^2 u}{dx^2} $
 
 ---------------
 
+## 流程图
+
+graph TD
+    A[Start] --> B{Is it?};
+    B-->|Yes|C[OK];
+    C-->D[Rethink];
+    D-->B;
+    B-->|No|E[End];
