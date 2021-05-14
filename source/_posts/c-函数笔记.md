@@ -37,3 +37,34 @@ stringstream 功能强大
     int ans; string tar = "123";
     ss << tar; ss >> ans;
     // ans = 123;
+
+# string 用法记录
+构造函数
+    string str; // 空字符串
+
+    string str1('a', 9); //重复的9个a
+
+    string str2("hello world"); // "hello world" 字符串
+
+    string str3("abcd", 3); // "abc"
+
+    string str4("abcde", 1, 2); // "bc"
+
+    string str5(str1); //"aaaaaaaaa"
+
+c_str() 获取字符串等价的 char*
+
+    string a = "hello world";
+    const char* a_to_p = a.c_str();
+
+char* char[] 转string 可直接进行赋值
+
+    const char* pszName = "liitdar";
+    char pszCamp[] = "alliance";
+    strName = pszName;
+    strCamp = pszCamp;
+
+字符串比较 compare
+
+    string a = "a"; string b = "b";
+    int ans = a.compare(b); // 0 为相等
