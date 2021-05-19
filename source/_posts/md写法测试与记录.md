@@ -36,6 +36,7 @@ $ \cdots $
 $ \cdots $
 
 $ \lim_{n\rightarrow+\infty} ax^n $
+$ \lim\limits_{n\to0} {\sin{x} \over x }$ = 1
 
 $ \prod_{x=1}^{y} ax^n $
 

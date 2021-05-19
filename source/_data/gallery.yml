@@ -41,7 +41,12 @@ pict006_normal_talk_gfc:
   full_link: /walkingball/images/1960e9c18fc734_1_post.jpg
   thumb_link: /walkingball/images/1960e9c18fc734_1_post.jpg
   desrc: "随意从精选图集中选的一张，帅气却柔弱的感觉"
-pict007_normal_talk_gfc:
+pict007_error_about_socket.io:
   full_link: /walkingball/images/1d39f0c5f25e64_1_post.jpg
   thumb_link: /walkingball/images/1d39f0c5f25e64_1_post.jpg
   desrc: "随意从精选图集中选的一张，放上来后重点变成了兔子"
+
+pict008_rember_about_hmath:
+  full_link: /walkingball/images/84287955_p0.png
+  thumb_link: /walkingball/images/84287955_p0.png
+  desrc: "柔缓地融入了记忆(DNA)之中"
