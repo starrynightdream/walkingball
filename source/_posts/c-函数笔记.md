@@ -99,3 +99,20 @@ partial_sort(vec.begin(),vec.begin() + 5, vec.end());
 ```c++
 nth_element(a + 1, a + 4, a + 8);
 ```
+
+# STL操作
+
+## emplace_back
+与 push_back 一致向尾部添加一个元素，不同的是它会直接在插入时调用构造而不是先调用生成一个临时对象在调用移动构造函数。
+
+```c++
+elections.emplace_back(arg1, arg2...);
+```
+
+# STL容器
+
+## unordered_map<T1, T2>
+无序表，底层为哈希，逻辑存储键值对。存在默认值。
+```c++
+unordered_map<string, int> c_set;
+```
