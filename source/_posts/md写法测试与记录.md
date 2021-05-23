@@ -42,6 +42,10 @@ $ \prod_{x=1}^{y} ax^n $
 
 $ \frac{du}{dt} and \frac{d^2 u}{dx^2} $
 
+$ \vec{a}$
+
+$ \int_x^{x^2} y^4 {\rm d} x $
+
 ---------------
 
 ## 流程图
