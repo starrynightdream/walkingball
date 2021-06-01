@@ -12,7 +12,7 @@ thumbnail: /walkingball/images/65265727_p0.png
 这里的环境是： win10 + unity2019，但估计差别不大。
 
 首先是设置unity
-1. Unity Preferences, External Tools
+1. Unity Edit-> Preferences-> External Tools
 2. External Script Editor 设置为vsc
 
 之后安装下列插件：
