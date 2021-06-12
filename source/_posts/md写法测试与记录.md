@@ -56,3 +56,9 @@ graph TD
     C-->D[Rethink];
     D-->B;
     B-->|No|E[End];
+
+## 表格
+
+| k | k2 |
+|---|---|
+| test | twst|

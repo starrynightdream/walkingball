@@ -3,8 +3,8 @@ title: 居然是JAVA的maven
 date: 2021-06-10 19:51:05
 tags:
 - 技术
-	+ java
-	+ maven
+   + java
+   + maven
 thumbnail: /walkingball/images/kon-java-=w=.jpg
 ---
 

@@ -70,3 +70,8 @@ pict012_kon_java:
   full_link: /walkingball/images/kon-java-=w=.jpg
   thumb_link: /walkingball/images/kon-java-=w=.jpg
   desrc: "迫真Java，说实话轻音确实是经典了"
+
+pict013_vim_magic:
+  full_link: /walkingball/images/vim_magic.jpg
+  thumb_link: /walkingball/images/vim_magic.jpg
+  desrc: "清爽的魔法师，似曾相识，也许有动画。用她因为vim有种魔法咒语的既视感"
