@@ -20,7 +20,7 @@ thumbnail: /walkingball/images/kon-java-=w=.jpg
 
 注意可能要重启，我的情况没有重启。
 
-### 编码相关
+### 编码格式相关
 你应该在这里修改你的源文件编码
 ```xml
 <project>
@@ -67,6 +67,52 @@ clean就好。项目右键 -> run as -> maven clea
 ```
 待补充
 
+### Cannot load driver class: com.mysql.cj.jdbc.Driver
+基本就是m版本的问题，不是java版本的问题就是mysql版本的问题。
+看情况将依赖的mysql包升降等级即可。
+
+- java6以上使用 com.mysql.cj.jdbc.Driver
+- java5则使用 com.mysql.jdbc.Driver
+
+### Caused by: java.lang.NoClassDefFoundError: javax/xml/bind/ValidationException
+java9之后jaxb不再捆绑存在，因此需要额外导入。如果是使用maven则需要加入依赖
+```xml
+<dependency>
+     <groupId>javax.xml.bind</groupId>
+     <artifactId>jaxb-api</artifactId>
+     <version>2.3.0</version>
+ </dependency>
+ <dependency>
+     <groupId>com.sun.xml.bind</groupId>
+     <artifactId>jaxb-impl</artifactId>
+     <version>2.3.0</version>
+ </dependency>
+ <dependency>
+     <groupId>com.sun.xml.bind</groupId>
+     <artifactId>jaxb-core</artifactId>
+     <version>2.3.0</version>
+ </dependency>
+ <dependency>
+     <groupId>javax.activation</groupId>
+     <artifactId>activation</artifactId>
+     <version>1.1.1</version>
+ </dependency>
+```
+这个问题我是在迁移之前的ssm项目到maven里时，验证码模块遇到的依赖。仅供参考。
+
+### Error configuring application listener of class org.springframework.web.context.ContextLoaderListener
+使用了两个办法，应该是两个都做了才成功解决问题。
+#### 添加依赖
+用maven重新整合ssm时，还需要执行以下步骤
+- 项目右键，Properties
+- Deployment Assembly
+- Add
+- Java Build Path Entries
+- 添加maven
+- run as maven clean
+
+#### 确认资源版本
+根据自己使用的java版本确认资源，自己因为使用了过高版本的资源导致错误。
 
 ## 其它记录的解决方案
 
