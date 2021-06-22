@@ -16,6 +16,11 @@ thumbnail: /walkingball/images/vim_magic.jpg
 
 强烈建议边开vim边操作。（万一我错了呢 =w=
 
+## linux vi/vim 一图流
+这里的是面向linux的，和本文vsc的vim插件可能有些许不同。
+
+![img][vim_pict]
+
 ## 正文
 ### 概念
 vim 编辑器存在三种模式，编辑，普通和命令，在这里不细说
@@ -44,3 +49,13 @@ s 替换当前光标字符并开始追加 S 替换当前光标该行并开始追
 - q 结束录制
 - @ + 寄存器标识， 即可重复执行命令。
 - 可以配合数字完成大量操作。
+
+### 参考
+在学习过程中遇到许多，有些记下来了，有些不小心漏了。。 =w=
+
+[a-z的学习法](https://0xzx.com/202001070446443282.html/amp)
+[菜鸟也是王道了，一图流也是它的](https://www.runoob.com/linux/linux-vim.html)
+
+
+
+[vim_pict]:/walkingball/innerPict/vim/vi-vim-cheat-sheet-sch.gif
