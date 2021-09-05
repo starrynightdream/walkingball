@@ -36,10 +36,17 @@ thumbnail:
 ## 不会发生变更的参数和方法添加const
 如果使用者使用const的对象传入参数/调用方法，却发现报了不可以改变的错误，这就不合逻辑
 
+当然使用const_cast 也是个不错的想法
+
     // 一个不进行任何修改的的函数
     void func (const ClassName name) const {}
 
 ## + - * / 等运算的重载可写成全局
 避免冲突，在全局重载又在类内部重载会产生二义性。
 
+## 头文件和实现文件
+
+[大佬的文章，这里做一个记录][head_and_cpp]
+
+[head_and_cpp]: https://www.cnblogs.com/ider/archive/2011/06/30/what_is_in_cpp_header_and_implementation_file.html
 先写这么多
