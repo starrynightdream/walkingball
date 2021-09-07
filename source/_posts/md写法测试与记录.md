@@ -12,6 +12,9 @@ thumbnail:
 ## 小笔记
 hexo 貌似不支持 ` {{ ` 或 ` }} ` 注意不要出现
 
+符号一览表
+[there][all_simple]
+
 ## 基本
 
 ![image](/walkingball/images/17a638ccc65014_1_post.jpg)
@@ -64,3 +67,6 @@ graph TD
 | k | k2 |
 |---|---|
 | test | twst|
+
+----------
+[all_simple]: https://mirrors.tuna.tsinghua.edu.cn/CTAN/info/symbols/math/maths-symbols.pdf
