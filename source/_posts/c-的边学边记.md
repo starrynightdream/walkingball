@@ -35,6 +35,57 @@ thumbnail: /walkingball/images/86907186_p1.jpg
 
 [参考文章][volatile]
 
+### NULL 与 nullptr
+C++支持的NULL在C的宏定义为
+```c
+#define NULL ((void *)0)
+```
+因为void * 是不允许隐式转换的，因此编译器在处理NULL时会这样：
+```c++
+#ifdef __cplusplus
+#define NULL 0
+#else
+#define NULL ((void *)0)
+#endif
+```
+虽然这样切合了需求。但是将`NULL`作为0是有可能引起歧义的（比如重载了 `int` 和 `void*` 的函数，在使用`NULL`时会调用 `int` 的版本）
+因此 c++11 引入了 `nullptr` 关键字进行区分。
+
+[参考文章][NULL_nullptr]
+
+### GCC 编译步骤
+1. 预处理 （预编译）
+```
+gcc -E target.cpp -o target.i   // c语言用
+g++ -E target.cpp -o target.i // g++是gcc的c++编译器
+cpp target.cpp>target.i // cpp是预编译器
+```
+- 将所有#define删除，并且展开所有的宏定义
+- 处理所有的条件预编译指令，如#if #ifdef  #undef  #ifndef  #endif #elif
+- 递归处理 #include ,插入包含的文件
+- 删除所有注释
+- 添加行号和文件名标识，以便于编译时产生的错误警告能显示行号
+> 注意其保留#pragma编译器指令
+
+2. 编译
+```
+gcc  -S  target.i   -o  target.s
+g++  -S  target.i   -o  target.s
+```
+词法分析、语法分析、语义分析及优化后生成汇编代码
+
+3. 汇编
+```
+gcc  -c  target.s  -o  target.o
+as  target.s -o  target.o
+```
+生成对应的机器代码
+
+4. 链接
+链接动态库和静态库
+
+[参考文章][GCC_Step]
+
 ## 第 2 章 简单程序设计
 
 ### 四种强制转换
@@ -883,12 +934,274 @@ info2 == typeid(Base); //true
 > 因此虚表不仅有虚函数指针
 
 ## 第 9 章 群体类和群体数据的组织
+自定义类型是由多个基本类型或自定义类型的元素组成的，称之为**群体数据**
+群体类则封装群体数据与相关特殊操作
 
+> 群体可分两种
+> 1. 线性群体：元素按位置排列有序
+> 2. 非线性群体：不用位置顺序标识元素
+
+### 函数模板和类模板
+参数化多态性，就是将程序所处理的对象的类型参数化，使得一段程序可以用于处理多种不同类型的对象。
+#### 函数模板
+```c++
+template<模板参数表>
+类型名 函数名(参数表)
+{
+    函数体的定义
+}
+```
+模板参数表可接收由`,`隔开的
+1. `class`(`typename`)标识符，代表类型。
+```c++
+template <class T>
+```
+2. 类型说明符，接收一个类型说明符规定的常量。
+```c++
+template <int Size>
+```
+3. trmplate<参数表> class 标识符，接收一个类模板作为参数。
+```c++
+template <class con = allocon<c>>
+```
+
+当类型参数确定后，编译器以函数模板为样板，生成一个函数。过程称为函数模板的实例化，生成函数称为实例。
+
+> *函数模板与函数的区别*
+> 1. 函数模板本身在编译时不会生成任何代码，只有由模板生成的实例会生成目标代码。
+> 2. 被多个源文件引用的函数模板，应当连同函数体一同放在头文件中，而不能像普通函数那样只将声明放在头文件中。
+> 3. 函数指针只能指向模板的实例，而不能指向模板本身。
+
+#### 类模板
+使用类模板使用户可以为类定义一种模式，使得类中的某些数据成员、某些成员函数的参数、返回值或局部变量能取任意类型。
+
+```c++
+template<模板参数表>
+class 类名
+{
+    类成员声明
+}
+// 在类模板以外定义其成员函数
+template<模板参数表>
+类型名 类名<模板参数表标识符列表>::函数名 (参数表)
+// 建立对象
+模板名<模板参数表>对象名1,...,对象名1;
+```
+类模板本身不是类，只有被其它代码引用时模板从根据引用的需要生成具体的类。
+
+### 线性群体
+#### 概念
+对可直接访问的线性群体，我们可以直接访问群体中的任何一个元素
+对顺序访问的线性群体，只能按元素的排列顺序从头开始依次访问各个元素。
+<!--(索引访问搁置-->
+#### 直接访问的 Array 的实现 
+P 355
+1. 深浅复制
+2. `=` `[]`需要返回对象的引用。因为它们有作为左值的情况。
+3. 自定义类型转换。
+```c++
+// 重载了Array 向 T*类指针的转换
+template<class T>
+Array<T>::operator T*() {
+    return list;
+}
+template<class T>
+Array<T>::operator const T*() const{
+    return list;
+}
+```
+
+> tip:
+> 这里是第二种方法。第一种是之前提及的使用构造函数的方式。
+
+#### 顺序访问的 链表类
+P366
+
+#### 栈类
+P369
+#### 队列类
+P376
+
+### 群体数据的组织
+#### 插入排序 
+P 378
+#### 选择排序 
+P 379
+#### 交换排序 （最简单的交换排序是冒泡排序）
+P 380
+#### 顺序查找
+P 381
+#### 折半查找
+P 381
+
+### 扩展
+#### 模板实例化机制
+##### 对模板与模板实例关系的辨析
+1. 模板函数不是函数，模板类不是类。而对应的实例是模板/类。
+2. 不同实例之间没有关系，既不是友元也不是派生。
+3. 模板函数有时发现没有指定类型参数，因为C++会根据实参类型进行类型推断，以确定使用哪种模板函数。
+
+##### 隐含实例化
+自动按需进行的模板实例化。（对应类型的函数被调用导致的实例化）
+
+##### 多文件结构中的组织
+模板成员函数的定义部分也应该放在头文件中。
+> **Warn!**
+> 当一个函数的定义出现在头文件的时候，多个文件对其的使用就会分别产生一个代码导致链接冲突。
+> ```c++
+> // 示例
+> // head.h
+> void funcThere(){
+    > //do nothing
+> }
+> // willInclude.cpp
+> #include "head.h"
+> // main.cpp
+> #include "head.h"
+> void main(){
+    > funcThere():
+> }
+> 
+> // 此时运行
+> // g++ willInclude.cpp main.cpp -o cppRun
+> // 会报出多个定义的错误
+> ```
+> 但是模板函数的隐含实例化导致的冲突是被允许的。编译器对其作了特殊处理。
+
+> Warn!
+> 若在头文件中仅提供模板的声明而没有实现。则：
+> 源程序在头文件中找到定义，
+> 源程序根据参数需求寻找特化定类型后的函数，发现没有。
+> 决定生成
+> 模板呢？找不到。于是报未定义错误。
+> 因为在声明与定义模板的时候，是不会产生任何函数的代码的，仅有在被需要的时候才会按需生成。这导致所有可能需要生成模板的函数都需要知道模板的定义。
+
+
+##### 显式实例化
+```c++
+// template 实例化目标声明
+template void output<int>(const int * arr); // 例
+// 因为有自动类型推断，所以参数省略
+template void output(const int * arr); 
+```
+> 这样就可以分离声明和定义。因为这使得代码在
+> 当然这样就需要穷举需要的类型。
+
+#### 为模板定义特殊实现
+##### 模板的特化 (全特化)
+定义：C++允许程序员为一个函数模板或类模板在某些特定参数下提供特殊的定义。
+```c++
+// from P389
+// 通过下面的写法为Stack提供bool的特定版本
+template<> // 此处为固定格式，仅作区别无意义
+class Stack<bool, 32> {
+    ... 
+}
+// 类外成员函数的定义方法
+bool Stack<bool, 32>::pop() {
+    assert(!isEmpty()); 
+    ... // code there
+}
+// 因为对类特化而非对成员函数。因此指定成员函数无需使用
+// template<> 告知为特化
+```
+
+##### 类模板的偏特化
+上述特化，同时限定住了类型和大小，而只打算限定类型时则需要借助偏特化
+```c++
+// from P390
+// 通过下面的写法为Stack提供bool的特定版本
+template<int SIZE> 
+class Stack<bool, SIZE> {
+    ... 
+}
+// 类外成员函数的定义方法
+template<int SIZE> 
+bool Stack<bool, SIZE>::pop() {
+    assert(!isEmpty()); 
+    ... // code there
+}
+```
+> 特化结果是一个普通的类。
+> 偏特化的结果仍然是一个模板
+
+其它应用:可限定类的取值范围
+```c++
+// 指定T为指针时使用该偏特化
+template<class T>class<T *>{...};
+// 指定T为const指针时使用该偏特化
+template<class T>class<const T *>{...};
+// 因为第二类比第一类严格，因此在二者都符合情况下会选择第二类。
+```
+
+##### 函数模板的重载
+> C++不允许将函数模板偏特化，但可以重载。效果与偏特化类似。
+
+```c++
+// P 392 例
+template<class T>
+T myMax(T a, T b) {
+    return (a>b)?a:b;
+}
+// 重载
+template<class T*>
+T* myMax(T* a, T* b) {
+    return (*a>*b)?a:b;
+}
+// 同理，因为第二类比第一类严格，因此在二者都符合情况下会选择第二类。
+```
+
+#### 模板元编程
+把运行时计算，放到编译完成。
+##### 例：阶乘编译计算
+```c++
+// P393
+template<unsigned N>
+struct Factorial {
+    enum {VALUE=N* Factorial<N-1>::VALUE};
+};
+template<>
+struct Factorial<0>{
+    enum {VALUE=1};
+};
+```
+> 如此，在需要使用 n! 时就可以使用模板了，并且会在编译的过程中就计算出来。
+```c++
+const int M = 6;
+int array[Factorial<M>::VALUE];
+```
+
+##### 例：乘方计算
+同理，不做说明
+```c++
+// P 394
+template<unsigned N>
+struct Power {
+    template<class T>
+    struct T value(T x) {
+        return v *Power<N-1>::value(x);
+    }
+}
+
+template<>
+struct Power<1>{
+    template<class T>
+    struct T value(T x) {
+        return v;
+    }
+}
+
+// 辅助函数模板
+template<unsigned N, class T>
+inline T power(T v) {
+    return Power<N>::value(N);
+}
+```
 
 ---------
 
 [volatile]: https://blog.csdn.net/ydar95/article/details/69822540
-
-
+[NULL_nullptr]: https://blog.csdn.net/reasonyuanrobot/article/details/100022574
+[GCC_Step]: https://blog.csdn.net/gt1025814447/article/details/80442673
 
 
