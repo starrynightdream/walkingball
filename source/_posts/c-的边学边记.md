@@ -21,6 +21,7 @@ thumbnail: /walkingball/images/86907186_p1.jpg
   - [第 7 章 继承与派生](#第-7-章-继承与派生)
   - [第 8 章 多态性](#第-8-章-多态性)
   - [第 9 章 群体类和群体数据的组织](#第-9-章-群体类和群体数据的组织)
+  - [第 10 章 泛型程序设计与C++标准模板库](#第-10-章-泛型程序设计与c标准模板库)
 
 <!-- /code_chunk_output -->
 
@@ -35,7 +36,7 @@ thumbnail: /walkingball/images/86907186_p1.jpg
 
 [参考文章][volatile]
 
-### NULL 与 nullptr
+### `NULL` 与 `nullptr`
 C++支持的NULL在C的宏定义为
 ```c
 #define NULL ((void *)0)
@@ -1197,6 +1198,481 @@ inline T power(T v) {
     return Power<N>::value(N);
 }
 ```
+
+## 第 10 章 泛型程序设计与C++标准模板库
+### 泛型程序设计及STL结构。
+> 我们用**概念** (concept)来描述泛型程序设计中作为参数的数据类型所需具备的功能。
+> - 这里的概念是泛型程序设计中的一个术语
+> - 它的内涵是这些功能
+> - 它的外延是具备这些功能的所有数据类型。
+> 
+> 具备一个概念所需要功能的数据类型称为这一概念的一个**模型**。
+> 
+> 对于不同的两个概念A和B，如果A所需求的所有功能也是概念B所需求的所有功能（即概念B一定是概念A的模型），那么就说概念B是概念A的子概念。
+>
+#### STL 简介
+标准模板库
+1. 容器
+    - 容纳、包含一组元素的对象。
+    - 向量 vector ，双端队列 deque，列表 list，集合 set，多重集合 multiset，映射 map，多重映射 multimap。
+    - 分为基本的 顺序容器(线性相关)、关联容器(快速提取)
+2. 迭代器
+    - 提供了顺序访问容器中每个元素的方法。
+3. 函数对象
+    - 一个行为类似函数的对象。（重载`()`运算符）
+    - 包含头文件 `<functional>`
+4. 算法
+    - 最重要的特性：统一性，并且可以广泛用于不同的对象和内置的数据类型。
+
+### 迭代器
+#### 输入流迭代器，输出流迭代器
+1. 输入流迭代器
+用来从一个输入流中连续地输入某种类型的数据，它是一个类模板。
+
+> STL 设计非常灵活，往往有多个模板参数但多有默认参数。
+
+2. 输出流迭代器 
+用来从一个输出流中连续地输出某种类型的数据，它也是一个类模板。
+
+> 输入流迭代器，输出流迭代器可以看作一个适配器
+> 适配器用于为已有的对象提供新的接口，本身一般不提供新功能，只为了改变对象的接口存在。
+
+#### 迭代器的分类
+0. 所有迭代器都支持
+- ++p // 指向下一个元素，返回p1自身的引用
+- p++ // 指向下一个元素，但返回类型是不确定的
+
+1. 输入迭代器支持
+- p1 == p2
+- p1 != p2
+- *p1
+- p1->m
+- *p1++
+
+> 注意：p1 == p2 不保证 ++p1 == ++p2
+
+2. 输出迭代器支持
+- *p1 = t
+- *p1++ = t
+
+> 注意：连续自增没有写入与连续写入都是未定义行为。
+
+3. 向前迭代器
+- *p1
+- p1++
+4. 双向迭代器
+- --p1
+- p1--
+5. 随机访问迭代器
+- p1+=n
+- p1-=n
+- p1+n与n+p1
+- p1-n
+- p1[n]
+
+#### 迭代器的区间
+[p1, p2) 表示，不包括p2.
+p1 == p2 表示空区间
+
+#### 迭代器的辅助函数
+advance 前进或后退多个元素
+```c++
+template <class InputIterator, class Distance>
+void advance(InputIterator& iter, Distance n);
+```
+distance 计算两个迭代器之间的距离
+```c++
+template <class InputIterator>
+void advance(InputIterator& first, InputIterator& last)
+// 须有 last >= first 成立
+```
+
+### 容器
+#### 容器的基本功能与分类
+- S s1
+- s1 op s2
+- s1.begin()
+- s1.end()
+- s1.clear()
+- s1.empty()
+- s1.size()
+- s1.swap(s2)
+
+> 有些操作之间效果是一致的，但是未必有相同的效率。
+
+
+- S::iterator 普通迭代器，指向元素类型为T
+- S::const_iterator 常量迭代器，元素类型为 const T 因此只能访问元素而不能通过迭代器修改
+
+P411 :
+容器 -> 可逆容器 -> 随机访问容器
+
+> tip:
+> 一般容器的 begin 和 end 函数提供向前迭代器。
+> 事实上STL提供的都至少是可逆容器，所以基本可以双向遍历。
+
+逆向迭代可以用：
+
+- S::reverse_iterator 普通迭代器，指向元素类型为T
+- S::const_reverse_iterator 常量迭代器，元素类型为 const T 因此只能访问元素而不能通过迭代器修改
+
+> 实际上逆向迭代器都可以直接构造一个方向相反的逆向迭代器。
+> ```c++
+> S::reserve_iterator(p1);
+> ```
+>
+
+STL 中各容器头文件和所属概念
+| 容器名  | 中文名  | 头文件  | 所属概念  |
+|---|---|---|---|
+|  vector | 向量      | \<vector\>  | 随机访问容器，顺序容器  |
+| deque   | 双端队列  | \<deque\>   | 随机访问容器，顺序容器 |
+| list    | 列表  | \<list  \>  | 可逆容器，顺序容器  |
+| set     |  集合 | \<set   \>  | 可逆容器，关联容器  |
+| multiset| 多重集合  | \<multit\>  | 可逆容器，关联容器  |
+| map     | 映射  | \<map   \>  | 可逆容器，关联容器  |
+| multimap| 多重映射  | \<multimap\>  | 可逆容器，关联容器  |
+
+#### 顺序容器
+1. 其基本功能
+vector deque list
+    - 构造函数
+        + S s(n, t); n 个 t
+        + S s(n); n 个 T()
+        + S s(q1, q2); 用[q1, q2) 区间的数据构造
+    - 赋值函数
+        + s.assign(n, t);
+        + s.assign(n);
+        + s.assign(q1, q2); 
+    - 元素的插入
+        + s.insert(p1, t);
+        + s.insert(p1, n, t);
+        + s.insert(p1, q1, q2);
+    - 元素的删除
+        + s1.erase(p1);
+        + s1.erase(p1, p2);
+    - 改变容器的大小
+        + s1.resize(n); 减少删尾部，增多尾部补T()
+    - 首尾元素的直接访问
+        + s.front(); 头
+        + s.back(); 尾
+    - 在容器尾部插入、删除元素
+        + s.push_back(t)
+        + s.pop_back()
+    - 在容器头部插入、删除元素
+        + s.push_front(t)
+        + s.pop_front()
+> vector 不属于前插顺序容器，但也可以通过 `inster` `erase` 函数实现前插，但效率较低。
+
+2. 各自特点
+> **向量 vector**
+> 随机访问，尾高效插入，其它位置效率都不高
+> 为避免动态增删频繁申请空间，其容器容量一般大于容器大小，额外的有如下函数：
+> - s.capacity() 返回s的容量
+> - s.reserve(n) 如果当前容量大于等于n则什么都不做，否则扩大s的容量，使得s的容量不小于n
+> > 在大量插入数据前，可用reserve提前申请空间。
+> > 注意
+> > 增删vector的内容会使得它所有迭代器失效。
+> > (更具体的说)：
+> > 增：
+> >     - 如果引起了空间分配，则一切失效。
+> >     - 否则，在插入位置之后的迭代器、指针、引用会失效
+> > 删：
+> >     - 其删除位置之后的迭代器、指针、引用会失效
+>
+> 技巧
+> 因为删除元素不会使得空间被释放，所以可以通过
+> ```c++
+> vector<T> (s.begin(), s.end()).swap(s);
+> vector<T> ().swap(s); // 我觉得这样写才对吧。。。
+> ```
+> 释放空间
+
+> **双端队列 deque** P418 <samll>有结构图</small>
+> 随机访问，但效率不及向量，首尾高效插入
+> 底层有一个个固定大小的数组，和一个记录所有数组首地址的索引数组
+> 两端加入元素，不会使指针、引用失效，会使迭代器失效
+> 两端删除元素，被删除元素的迭代器、指针引用失效，但不会影响其它元素。
+
+> **列表 list**
+> 不能随机访问，但可以高效在任意位置增删。
+> 任何增删都不会使任何已有元素的迭代器、引用、指针失效。
+> 其额外支持接合（splice）操作。（从一处删除加到另一处）
+> - s1.splice(p, s2) 将s2列表的所有元素插入到s1p-1和p之间，s2情空
+> - s1.splice(p, s2, q1) 将s2列表的q1指向的元素插入到s1p-1和p之间，并从s2移除
+> - s1.splice(p, s2, q1, q2) 将s2列表的[q1, q2)指向的元素插入到s1p-1和p之间，并从s2移除
+
+对比
+- 大量随机访问，主要尾部插入： 向量
+- 少量随机访问，两端插入： 双端队列
+- 基本无随机访问，任意位置插入： 列表
+P 422 详情
+
+3. 插入迭代器
+它是一种适配器，使用它可以通过输出迭代器的接口来向指定元素的指定位置插入元素。
+
+- template<class FrontInsertionSequence>class front_insert_iterator; 只适用于前插顺序容器。
+- template<class Sequence>class back_insert_iterator; 所有容器
+- template<class Sequence>class insert_iterator; 所有容器
+
+其可以通过构造函数创建，但一般通过如下辅助函数
+```c++
+template<class FrontInsertionSequence>
+front_insert_iterator<FrontInsertionSequence> front_inserter (FrontInsertionSequence& s);
+
+template<class Sequence>
+back_insert_iterator<Sequence> back_inserter (Sequence& s);
+
+template<class Sequence, class Iterator>
+insert_iterator<Sequence> inserter (Sequence& s, Iterator i);
+```
+因为其可以自动推断类型，无需特地指定。
+
+例：从标准输入得到的整数插入容器s的末尾
+```c++
+copy(istream_iterator<int>(cin), istream_iterator<int>(), back_inserter(s));
+```
+
+4. 顺序容器的适配器 （裁剪操作的封装）
+> **栈和队列**
+> ```c++
+> template<class T, class Sequence=deque<T>> class Stack; // 可以使用任一顺序容器
+> template<class T, class FrontInsertionSequence=deque<T>> class queue; // 限定为前插顺序容器
+> ```
+> 
+> 栈和队列共同支持
+> - s1 op s2
+> - s.size()
+> - s.empty()
+> - s.push(t)
+> - s.pop()
+> 
+> 栈支持
+> - s.top()
+> 
+> 队列支持
+> - s.front()
+> - s.back()
+
+> **优先队列**
+> 支持 size empty push pop top
+> 与栈、队列不同之处：
+> - 不支持比较
+> - 元素要支持`<`运算符
+
+#### 关联容器
+1. 分类和基本功能
+    - 其每个元素都有一个键（key）
+    - 其中元素按键的取值升序排列
+
+> tip： 关联容器在内部使用了平衡二叉树对数据进行维护。
+
+| 类型 | 简单关联容器(本身为键) | 二元关联容器(键是本身的一部分) |
+|---|---|---|
+| 单重关联容器(键唯一) | 集合 (set) | 映射 (map) |
+| 多重关联容器(键不唯一) | 多重集合 (multiset) | 多重映射 (multimap) |
+
+关联容器的键需要可以进行 `<` 比较大小
+
+> **`<` 运算的细节**
+> C++标准规定，`<`必须构成严格弱序关系，即：
+> - 非自反性：对任何x `x < x` 返回 `false`
+> - `<` 传递性， x < y , y < z 均为 true ，则 x < z 为 true
+> - `==` 传递性：把 x == y 定义为 !(x < y) && !(y < x)，则x == y , y == z 均为 true ，则 x == z 为 true
+
+单重和多重关联容器的区别
+1. 构造函数
+    ```c++
+    S s(q1, q2)
+    ```
+    单：[q1, q2)出现相同键时，只有第一个会被加入
+    多：[q1, q2)无条件加入
+2. 元素的插入
+    ```c++
+    s.insert(t)
+    // 将 t 插入 s 中
+    ```
+    单：键不存在时成功，返回`pair<S::iterator, bool>`。成功返回插入键的迭代器和true， 否则返回键一致元素的迭代器和false
+    多：返回已插入元素的迭代器
+    ```c++
+    s.insert(p1, t)
+    // p1 是一个提示位置，如果该位置距离目标位置很近，则提高效率。即便不准确也不影响函数的正确性
+    ```
+    单：当t不存在于s中才插入，返回t键相同元素的迭代器
+    多：总是插入成功，返回插入元素的迭代器
+    ```c++
+    s.insert(q1, q2)
+    // 对区间内每个元素分别执行s.insert(t)
+    ```
+3. 元素的删除
+    ```c++
+    s.earse(p1); // 删除p1指向元素
+    ```
+    ```c++
+    s.earse(p1, p2); // 删除[p1, p2)区间元素
+    ```
+    ```c++
+    s.earse(k); // 删除所有键为k的元素，返回被删除元素的个数
+    ```
+4. 基于键的查找和计数
+    ```c++
+    s.find(k) // 找任意一个键为 k 的元素，没有返回 s.end()
+    ```
+    ```c++
+    s.lower_bound(k) // s中第一个键值不小于k的元素迭代器
+    ```
+    ```c++
+    s.upper_bound(k) // s中第一个键值大于k的元素迭代器
+    ```
+    ```c++
+    s.equal_range(k) 
+    // 得到一个用 pair<S::iterator, S::iterator> 表示的区间，刚好包含所有键为k的元素。
+    // 即 p1 == s.lower_bound(k)
+    // 且 p2 == s.upper_bound(k)
+    ```
+    ```c++
+    s.count(k) // k元素的个数
+    ```
+
+**集合 set**
+存储有限不重复的元素。
+
+**映射 map**
+- 集合数据本身是键，映射是键-值的二元组。
+- 常用于查键的附加数据很像字典
+-
+tip：
+因为需要插入的数据类型为pair，每次指定都比较繁琐，因此常使用 make_pair 辅助函数构建
+它是`<utility>`中定义的一个专用于辅助二元组构造的函数模板。
+```c++
+template<class T1, class T2>
+pair<T1, T2>make_pair(T1 v1, T2 v2){return pair<T1, T2>(v1, v2);}
+
+// 使用
+m.insert(make_pair("C++", 2));
+```
+> 在使用 [] 寻址时，如果map中不存在该键，则会插入一个值为V()的元素。最后都返回对应键的引用。
+
+**多重集合 multiset 多重映射 multimap**
+它不支持`[]`了，因为键值不再一一对应。
+一般使用 equal_range 进行范围限定，以查找目标。
+底层一般是平衡树，故元素也需要支持 `<` 比较
+
+#### 函数对象基本概念及分类
+是一个行为类似函数的对象，它可以不需要参数，也可以带有若干参数，其功能是获取一个值或改变操作的状态。
+就是普通的函数和任何重载了调用运算符 `()` 的类的对象
+
+P436 常用函数对象的六种分类
+
+> 1. 产生器 一元函数 二元函数
+> 具有 0、1、2 个传入参数的函数对象
+> 2. 一元谓词，二元谓词
+> 返回值为 bool，并具有一个、两个参数
+
+
+P 439 的标准谓词
+tip： 其实大小判断均依赖 `<`，相等判断均依赖 `==`
+
+> 3. 关联类型
+函数对象可以获取由基类继承来的 参数类型信息 和 返回类型信息。称为关联类型的特征信息。
+
+#### 函数适配器
+将一种函数对象转化为另一种符合要求的还是担心。
+可分为四类
+- 绑定适配器
+- 组合适配器
+- 指针函数适配器
+- 成员函数适配器
+<small>P 441 详细介绍</small>
+因为声明特定类型过于繁琐，一般采用辅助函数。
+<small>P 442 辅助函数介绍</small>
+
+
+#### 算法
+算法本身就是一种函数模板
+STL几乎所有算法的头文件都是`<algorithm>`
+分类
+- 非可变序列的算法，不直接修改所操作容器内容 P449
+- 可变序列的算法，会改变所操纵容器的内容:
+    + 如：复制(copy) 生成(generate) 删除(remove) 替换(replace) 倒序(reverse) 旋转(rotate) 交换(swap) 变换(transform) 分割(partition) 去重(unique) 填充(fill) 洗牌(shuffle)
+
+- 排序和搜索算法，排序和合并算法，二分查找以及有序序列的集合操作算法等
+    + sort 要求两端指针为随机迭代器类型。因为sort具体实现使用了快速排序。
+- 通用数组算法，较少。
+    + P459
+
+### 扩展
+#### swap
+swap 有一个通用模板，但是对于某些特定的实现是不够高效的，因此往往会去特化其实现。
+```c++
+// 通用 ver 这个也在std下，不详述
+template<class T>
+void swap(T &a, T &b)
+{
+    T temp = a;
+    a = b;
+    b = temp;
+}
+// 特化ver, 这个特地表明在std下
+// 是为了体现对于swap的特化需要在std命名空间下进行。
+namespace std {
+    template<class T>
+    void swap(vector<T> &a, vector<T> &b)
+    {
+        a.swap(b);
+    }
+}
+// 因为vector访问底层修改指针会更快，
+// 因此先定义一个成员函数swap，(为了访问内部变量)
+// 再通过模板的swap调用，就可以兼顾统一与效率。
+```
+> 注：
+> swap 是定义在 std 命名空间内的，因此对其的特化也要放在std命名空间内。
+
+> Warn：
+> 对自己的模板而非切实的类进行 swap 的特殊化不像对类提供一般简单，因为无法偏特化一个函数模板，只能重载它。
+> 而且向c++保留命名空间std内部定义新的类、函数或模板会产生不确定的行为，对已有的进行特化则允许。
+> 你在std外部为其定义函数模板一般不会被其它STL算法调用
+
+#### STL 组件的类型特征与STL 扩展
+所谓类型特征，一般都是用`typedef`定义在类或结构体内的数据类型。
+标准的STL组件都提供了完整的类型特征，因此它们可以很好地协同工作。
+在为STL编写扩展组件时，也应当为其定义相关的类型特征。
+1. 利用函数对象的类型特征实现函数适配器
+```c++
+template<class BinaryFunction>
+class binder1st:public unary_function<typename BinaryFunction::second_argument_type, typename BinaryFunction::result_type> {
+    protected:
+        BinaryFunction op;
+        typename BinaryFunction::first_argument_type value;
+    public:
+        // 构造函数
+        binder1st(const BinaryFunction& op,
+        const typename BinaryFunction::first_argument_type& value): op(op), value(value){ }
+        // () 重载
+        typename Operation::result_type
+        operator()(const typename BinaryFunction::secode_argument_type& x) const { return op(value, x);}
+}
+// P470
+// 调用辅助函数
+template<class BinaryFunction, class T>
+binder1st<BinaryFunction>bind1st(const Operation& op, cosnt T& x){
+    return binder1st<BinaryFunction>(op, x);
+}
+```
+> 细节：
+> 此处使用了大量的typename，此处用于强调后跟着的标识符表示的是一个数据类型。
+> c++标准规定，在模板中引用的、依赖于模板参数的数据类型，必须用typename修饰，否则标识符就不被解析为一个数据类型。
+
+2. 迭代器的类型特征
+
+ptrdiff_t 与 size_t 类似，与指针有相同字节数的整数类型。但ptrdiff_t 有符号。
+
+定义自己的迭代器时，无须分别定义各个类型特征，只要继承 iterator 类即可。
+P471 有头文件。
+
+3. 利用类型特征实现算法。
+
 
 ---------
 
