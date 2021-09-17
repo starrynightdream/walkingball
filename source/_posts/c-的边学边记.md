@@ -22,6 +22,7 @@ thumbnail: /walkingball/images/86907186_p1.jpg
   - [第 8 章 多态性](#第-8-章-多态性)
   - [第 9 章 群体类和群体数据的组织](#第-9-章-群体类和群体数据的组织)
   - [第 10 章 泛型程序设计与C++标准模板库](#第-10-章-泛型程序设计与c标准模板库)
+  - [第 11 章 流类库与输入输出](#第-11-章-流类库与输入输出)
 
 <!-- /code_chunk_output -->
 
@@ -143,6 +144,10 @@ as  target.s -o  target.o
     }
 ```
 它应该用在如：已知指针类型情况下转换为正确的指针。
+
+> 细节
+> 如P489的提示一般
+> c++标准未限制 `reinterpret_cast` 转换指针的行为，但是其实现往往是仅拷贝比特位的。
 
 #### static_cast (静态转换)
 - 编译时处理
@@ -1670,8 +1675,165 @@ ptrdiff_t 与 size_t 类似，与指针有相同字节数的整数类型。但pt
 
 定义自己的迭代器时，无须分别定义各个类型特征，只要继承 iterator 类即可。
 P471 有头文件。
+```c++
+// <iterator>头文件
+template<class Iterator>struct iterator_traits{
+    typedef typename Iterator::difference_type difference_type;
+    typedef typename Iterator::value_type value_type;
+    typedef typename Iterator::pointer pointer;
+    typedef typename Iterator::reference reference;
+    typedef typename Iterator::iterator_category iterator_category;
+}
+// 为数组特化
+template<class T>struct iterator_traits<T*>{
+    typedef ptrdiff_t difference_type;
+    typedef T value_type;
+    typedef T * pointer;
+    typedef T &reference;
+    typedef random_access_iterator_tag iterator_category;
+}
+// 为常数数组特化
+template<class T>struct iterator_traits<const T*>{
+    typedef ptrdiff_t difference_type;
+    typedef T value_type;
+    typedef const T * pointer;
+    typedef const T &reference;
+    typedef random_access_iterator_tag iterator_category;
+}
+```
 
 3. 利用类型特征实现算法。
+```c++
+// P474
+template<class InputIterator, class OutputIterator>
+void mySort(InputIterator first, InputIterator last, OutputIterator result) {
+    // 此处根据传入的InputIterator类型推断调用本函数
+    // 将IpuutIterator内记录的value_type用作初始化
+    // 这样vector的初始化就无需指定类型。
+    // 故无需特地告知输入的类型
+    vector<typename iterator_traits<InputIterator>::value_type> s(first, last);
+    sort(s.begin(), s.end());
+    copy(s.begin(), s.end(), result);
+}
+```
+```c++
+// 根据不同迭代器类型执行不同
+// 向后移动 n 位
+// 的示例
+// 出入迭代器ver
+template<class InputIterator, class Distance>
+inline void__advance_helper(InputIterator& i, Distance n, input_iterator_tag) {
+    while (n-- !=0) ++i;
+}
+// 随机访问迭代器ver
+template<class InputIterator, class Distance>
+inline void__advance_helper(InputIterator& i, Distance n,random_access_iterator_tag) {
+    i+=n;
+}
+// 辅助函数
+template<class InputIterator, class Distance>
+inline void advance(InputIterator& i, Distance n) {
+    __advance_helper(i, n,
+        typename iterator_traits<InputIterator>::iterator_category());
+}
+```
+
+> 细节
+> 因为__advance_helper函数是 inline 的，所以该函数是容易被编辑器优化，所以看似比 advance 多使用一个参数，但不会占用额外的空间。
+
+#### Boost 简介
+一个很有用的第三方库。
+比如 lambda c++ 图像处理库 通配符等等等等。
+
+## 第 11 章 流类库与输入输出
+> - 流是一种抽象，它负责在数据的生产者和数据的消费者之间建立联系，并管理数据的流动。
+> - 程序将流对象看作是文件对象的化身。
+> - 读 - 提取
+> - 写 - 插入
+
+### 输出流
+三个常用ostream (顺带一提还有一个常用的istream是cin)
+- cout 标准输出流
+- cerr 标准错误输出流，没有缓冲，发送给它的内容立即被输出。
+- clog 类似cerr，但是有缓冲，缓冲区满时被输出。
+
+> **关于缓冲**
+> 当一个输出流没有缓冲的时候，就会每接收到一个字符就执行一次刷新。
+> 如输出"之乎者也"，就会刷新4次面板。
+> 但是如果在内存不足的情况下，没有缓冲就显得尤为重要，因为你没有多余的空间暂存你的信息。
+> 也因此，cerr没有缓冲，cout有，clog则是补正cerr的不足而出现的。
+> [参考][inner_cout_cerr_clog]
+
+> **关于区别**
+> 虽然三者都默认输出到屏幕，但除了缓冲区外，标准输出和标准错误输出还是有区别的。
+在运行程序时，可以使用 `>` 对标准输出进行重定向，此时cout输出的内容被重定向，但cerr和clog则依旧打印在了屏幕上。
+> 你也可以通过 `2>` 来对标准错误重定向
+```
+target.exe > info.txt // 这样二者就区别开了
+// err 会打印在屏幕
+// info.txt
+cout则会在文件中
+```
+
+ofstream 磁盘文件输出
+
+
+```c++
+ofstream myFile;
+myFile.open("fn");
+//or
+ofstream myFile("fn");
+//or
+ofstream myFile;
+myFile.open("f1n");
+myFile.close();
+myFile.open("f2n");
+myFile.close();
+```
+
+插入运算符 `<<`
+可以同预先定义的操纵符一起工作，控制输出。
+> 具体查看P484
+
+- 控宽 width setw
+- 填空 fill
+- 对齐 P486
+- 精度
+- 进制
+
+#### 文件输出流成员函数
+与操纵符等价的成员函数
+执行非格式化写操作的成员函数
+其它修改流状态且不同于操纵符或插入运算符的成员函数
+
+1. open(filename, 操纵符)
+    - 操纵符可以使用 `|` 组合使用
+2. close()
+    - 输出流析构函数会关闭未关闭的文件
+3. put
+    - cout.put('a') 等价 cout<<"a";
+4. write
+    - 二进制写入。空字符不停止
+5. seekp tellp
+    - 记录一个指针指向文件内部的位置，使得对文件可以随机访问。
+    - seekp 为设置， tellp为获取
+    - [参考][inner_seekp_tellp]
+6. 错误处理 P490
+
+#### 二进制输出文件
+不同操作系统结束符不一样，
+所以使用二进制输入文件可以规避换行符的转换。
+```c++
+ofstream os("fn.txt", ios_base::out|ios_base::binary);
+```
+
+#### 字符输出流
+ostringstream
+- 特有函数 str() 返回string对象
+
+### 输入流
+
+
 
 
 ---------
@@ -1679,5 +1841,9 @@ P471 有头文件。
 [volatile]: https://blog.csdn.net/ydar95/article/details/69822540
 [NULL_nullptr]: https://blog.csdn.net/reasonyuanrobot/article/details/100022574
 [GCC_Step]: https://blog.csdn.net/gt1025814447/article/details/80442673
+
+
+[inner_cout_cerr_clog]: https://blog.csdn.net/bsmmaoshenbo/article/details/50778068
+[inner_seekp_tellp]: https://blog.csdn.net/mafuli007/article/details/7314917
 
 
