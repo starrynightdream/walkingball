@@ -34,12 +34,28 @@ thumbnail: /walkingball/images/86907186_p1.jpg
 ## 曾经的测试
 ```c++
 // b为 char， 在经过自加与加数字之后依旧是字符类型。
-
 cout<<(typeid(b)).name()<<endl;
 cout<<(typeid(b++)).name()<<endl;
 // c
 // c
 ```
+
+```c++
+    const char * k1 = "123";
+    char const * k2 = "456";
+    char * const k3 = "789";
+    // k1 和 k2 等价
+    // const修饰的是char 不可以改字符数组内容
+    // k3 const 修饰的是k3
+    // 指针指向不可以改
+    // k1[1] = '0'; // err
+    k3[1] = '0'; // ok
+    k1 = k2; // ok
+    // k3 = k2; // err
+
+```
+
+
 
 
 ## 未归类知识点
@@ -159,6 +175,20 @@ int main(){
 }
 ```
 顺便一提貌似后置++ 就是有一个占位参数，借此区别于前置++
+
+### 标准库与非标准库
+例：
+> #include <iostream.h>非标准输入输出流
+> #include <iostream>标准输入输出流
+
+引入iostream.h 时就无需 using namespace std; 直接使用cout。
+
+同理，使用 .h 的c兼容代码无需在意命名空间
+
+顺便一提vs编译器不能引入 .h
+
+[参考文章][why_need_h]
+
 
 ## 第 1 章 绪论
 #### 机器语言与汇编语言
@@ -2291,6 +2321,7 @@ ap2.reset(ap1.release());
 [volatile]: https://blog.csdn.net/ydar95/article/details/69822540
 [NULL_nullptr]: https://blog.csdn.net/reasonyuanrobot/article/details/100022574
 [GCC_Step]: https://blog.csdn.net/gt1025814447/article/details/80442673
+[why_need_h]: https://blog.csdn.net/cxk207017/article/details/82957260
 
 
 [inner_cout_cerr_clog]: https://blog.csdn.net/bsmmaoshenbo/article/details/50778068
