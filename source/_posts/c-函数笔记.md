@@ -39,6 +39,7 @@ stoi c++的
 stringstream 功能强大
 
 ```c++
+    // 头文件 <sstream>
     stringstream ss;
     int ans; string tar = "123";
     ss << tar; ss >> ans;

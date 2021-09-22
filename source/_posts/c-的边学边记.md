@@ -55,6 +55,25 @@ cout<<(typeid(b++)).name()<<endl;
 
 ```
 
+```c++
+int main()
+{
+    const int SIZE = 10;
+    char alist[SIZE];
+    char blist[SIZE];
+    // cin.get(alist, SIZE);
+    // cin.get(blist, SIZE);
+    cin.getline(alist, SIZE);
+    cin.getline(blist, SIZE);
+    cout<<alist;
+    cout<<endl;
+    cout<<blist;
+    return 0;
+    // 输入 12 [回车] 
+    // get 会给出12 和空白，因为读取了\n
+    // getline 则会等待输入
+}
+```
 
 
 
@@ -189,6 +208,43 @@ int main(){
 
 [参考文章][why_need_h]
 
+### 运算符优先级关键
+范围解析无条件优先
+后置加加减减最高，前置次之
+
+### c++2.0中的变量模板
+任意类型，任意长度
+最简单的处理办法是使用递归
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+
+// 至最后无参数的情况
+void printX() {
+    cout<<"All done"<<endl;
+}
+
+// 一次处理一个参数，其余递归
+template<typename T,typename... Types>
+void printX(const T& firstArg,const Types&... args) {
+    cout<<firstArg<<endl;
+    printX(args...);// ... 意为变长
+}
+
+int main()
+{
+    printX(7.5,"hello",bitset<16>(377),42);
+    return 0;
+}
+```
+类同理。
+
+[参考文章][c_2_template_argus]
+
+### get 与 getline
+当遇到 `\n` 时，二者都结束读取，但get会把`\n`留在缓冲区中，getline会去掉。
+
+[参考文章][get_getline]
 
 ## 第 1 章 绪论
 #### 机器语言与汇编语言
@@ -1098,7 +1154,7 @@ virtual type name (params) = 0; // 纯虚析构函数
 声明为纯虚析构函数之后，基类就可以不再给出函数的实现部分。(类接口)
 
 #### 抽象类
-指带有纯虚析构函数的类是抽象类。
+指带有纯虚函数的类是抽象类。
 抽象类不能实例化。
 
 ### 扩展
@@ -2322,9 +2378,11 @@ ap2.reset(ap1.release());
 [NULL_nullptr]: https://blog.csdn.net/reasonyuanrobot/article/details/100022574
 [GCC_Step]: https://blog.csdn.net/gt1025814447/article/details/80442673
 [why_need_h]: https://blog.csdn.net/cxk207017/article/details/82957260
+[c_2_template_argus]: https://www.cnblogs.com/clno1/p/13066631.html
 
 
 [inner_cout_cerr_clog]: https://blog.csdn.net/bsmmaoshenbo/article/details/50778068
 [inner_seekp_tellp]: https://blog.csdn.net/mafuli007/article/details/7314917
 
 
+[get_getline]: https://www.cnblogs.com/qlwy/archive/2011/11/03/2235126.html
