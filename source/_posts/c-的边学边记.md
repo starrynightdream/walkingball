@@ -78,12 +78,12 @@ int main()
 
 
 ## 未归类知识点
-### explict 防止隐式转换
+### explicit 防止隐式转换
 ```c++
 // 可用在构造函数与类型转换函数
-explict ClassName():i(1){}
+explicit ClassName():i(1){}
 
-explict operator int(){
+explicit operator int(){
     return 1;
 }
 ```
